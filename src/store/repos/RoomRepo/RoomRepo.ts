@@ -38,31 +38,39 @@ class RoomRepo extends Repo implements IRepo {
 			return { rooms: undefined, error: new Error("error getting room") };
 		}
 
-		const rooms: Room[] = [];
-		result!.forEach((r) => {
-			rooms.push(new Room(r.name, [], 0, r.creatorId, r.id, r.creationDate));
-		});
+		if (result) {
+			const rooms: Room[] = [];
+			result.forEach((r) => {
+				rooms.push(new Room(r.name, [], 0, r.creatorId, r.id, r.creationDate));
+			});
 
-		return { rooms: rooms, error: undefined };
+			return { rooms: rooms, error: undefined };
+		}
+
+		return {};
 	}
 
 	async readOne(key: string, field: string): Promise<QueryOneResult> {
 		const query: string = "SELECT * FROM rooms WHERE " + `${field}` + "=" + `"${key}"`;
-		const room = await this.db.query(query);
+		const { result, error } = await this.db.query(query);
 
-		if (room.error) {
+		if (error) {
 			return { room: undefined, error: new Error("error getting room") };
 		}
 
-		if (room.result![0]) {
-			const { messages, error } = await messageRepo.readOne(room.result![0].id);
+		if (result) {
+			if (result[0]) {
+				const { messages, error } = await messageRepo.readOne(result[0].id);
 
-			if (error) {
-				return { room: undefined, error: error };
+				if (error) {
+					return { room: undefined, error: error };
+				}
+
+				if (messages) {
+					const r: Room = new Room(result[0].name, messages, result[0].numOfUsers, result[0].creatorId);
+					return { room: r };
+				}
 			}
-
-			const r: Room = new Room(room.result![0].name, messages!, room.result![0].numOfUsers, room.result![0].creatorId);
-			return { room: r };
 		}
 
 		return { error: new Error("room not found") };

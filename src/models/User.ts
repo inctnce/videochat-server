@@ -46,11 +46,11 @@ class User extends Model {
 		return this.accessToken;
 	}
 
-	SetAccessToken() {
+	SetAccessToken(): void {
 		this.accessToken = AccessToken.generate(this.id);
 	}
 
-	SetRefreshToken() {
+	SetRefreshToken(): void {
 		this.refreshToken = RefreshToken.generate(this.id);
 	}
 }

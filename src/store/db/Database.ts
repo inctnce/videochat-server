@@ -3,6 +3,7 @@ import QueryResult from "./QueryResult";
 
 class Database {
 	private static instance: Database;
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	private db: mysql.Pool = mysql.createPool(process.env.CLEARDB_DATABASE_URL!);
 
 	constructor() {

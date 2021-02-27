@@ -38,7 +38,7 @@ class Room extends Model {
 		return this.creatorId;
 	}
 
-	UpdateNumOfUsers(n: number) {
+	UpdateNumOfUsers(n: number): void {
 		this.numOfUsers = n;
 	}
 }

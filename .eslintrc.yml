@@ -20,3 +20,7 @@ rules:
   semi:
     - error
     - always
+  non-null-assertion:
+    - off
+  no-explicit-any:
+    - off

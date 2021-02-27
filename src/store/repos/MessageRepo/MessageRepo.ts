@@ -24,13 +24,17 @@ class MessageRepo extends Repo implements IRepo {
 			return { messages: undefined, error: new Error(`error getting messages for room ${roomId}`) };
 		}
 
-		const messages: Message[] = [];
-		result!.forEach((m) => {
-			messages.push(new Message(m.text, m.creatorId, m.creatorNickname, m.roomId, m.isEdited, m.id, m.creationDate));
-		});
-		messages.sort((a: Message, b: Message) => (a.CreationDate() > b.CreationDate() ? 1 : -1));
+		if (result) {
+			const messages: Message[] = [];
+			result.forEach((m) => {
+				messages.push(new Message(m.text, m.creatorId, m.creatorNickname, m.roomId, m.isEdited, m.id, m.creationDate));
+			});
+			messages.sort((a: Message, b: Message) => (a.CreationDate() > b.CreationDate() ? 1 : -1));
 
-		return { messages: messages, error: undefined };
+			return { messages, error: undefined };
+		}
+
+		return {};
 	}
 
 	async update(id: string, newText: string): Promise<QueryResult> {

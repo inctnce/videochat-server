@@ -48,7 +48,7 @@ roomRouter.get("/get/:id", verifyToken, async (req, res) => {
 
 roomRouter.delete("/delete/:id", verifyToken, async (req, res) => {
 	const id: string = req.params.id;
-	const { rooms, error } = await Store.Room().delete(id);
+	const { error } = await Store.Room().delete(id);
 
 	if (error) {
 		return res.status(503).send(error);

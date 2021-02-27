@@ -18,7 +18,7 @@ class UserRepo extends Repo implements IRepo {
 		UserRepo.instance = this;
 	}
 
-	async create(user: User) {
+	async create(user: User): Promise<QueryResult> {
 		const query = `INSERT INTO users VALUES("${user.Id()}", "${user.Nickname()}", "${user.Email()}", "${user.HashedPassword()}", "${user.RefreshToken()}")`;
 		return await this.db.query(query);
 	}
@@ -31,21 +31,25 @@ class UserRepo extends Repo implements IRepo {
 			return { user: undefined, error: new Error("error getting user") };
 		}
 
-		if (result!.length === 0) {
-			return {};
+		if (result) {
+			if (result.length === 0) {
+				return {};
+			}
+
+			const accessToken: string = AccessToken.generate(result[0].id);
+			const user: User = new User(
+				result[0].nickname,
+				result[0].email,
+				result[0].password,
+				result[0].token,
+				accessToken,
+				result[0].id
+			);
+
+			return { user: user, error: undefined };
 		}
 
-		const accessToken: string = AccessToken.generate(result![0].id);
-		const user: User = new User(
-			result![0].nickname,
-			result![0].email,
-			result![0].password,
-			result![0].token,
-			accessToken,
-			result![0].id
-		);
-
-		return { user: user, error: undefined };
+		return {};
 	}
 
 	async update(id: string, value: string | null, field: string): Promise<QueryResult> {

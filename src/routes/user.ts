@@ -45,22 +45,24 @@ userRouter.post("/login", async (req, res) => {
 			return res.status(503).send(error);
 		}
 
-		const isValidPassword: boolean = await Password.compare(password, user!.HashedPassword());
-		if (isValidPassword) {
-			user!.SetAccessToken();
+		if (user) {
+			const isValidPassword: boolean = await Password.compare(password, user.HashedPassword());
+			if (isValidPassword) {
+				user.SetAccessToken();
 
-			if (user!.RefreshToken()) {
+				if (user.RefreshToken()) {
+					return res.status(200).send(user);
+				}
+
+				user.SetRefreshToken();
+				const { error } = await Store.User().update(user.Id(), user.RefreshToken(), "token");
+
+				if (error) {
+					return res.status(503).send(error);
+				}
+
 				return res.status(200).send(user);
 			}
-
-			user!.SetRefreshToken();
-			const { error } = await Store.User().update(user!.Id(), user!.RefreshToken(), "token");
-
-			if (error) {
-				return res.status(503).send(error);
-			}
-
-			return res.status(200).send(user);
 		}
 	}
 	return res.status(400).send({ error: "invalid email or password" });
@@ -78,13 +80,16 @@ userRouter.get("/:id/logout", verifyToken, async (req, res) => {
 
 userRouter.get("/:id/token", async (req, res) => {
 	const id: string = req.params.id;
-	const refreshToken: string = req.headers.authorization!.split(" ")[1];
 
-	const isValid: boolean = await RefreshToken.verify(id, refreshToken);
-	if (isValid) {
-		const id: string = req.params.id;
-		const accessToken: string = AccessToken.generate(id);
-		return res.status(200).send({ accessToken: accessToken });
+	if (req.headers.authorization) {
+		const refreshToken: string = req.headers.authorization.split(" ")[1];
+
+		const isValid: boolean = await RefreshToken.verify(id, refreshToken);
+		if (isValid) {
+			const id: string = req.params.id;
+			const accessToken: string = AccessToken.generate(id);
+			return res.status(200).send({ accessToken: accessToken });
+		}
 	}
 
 	return res.status(400).send({ error: "unauthorized user" });

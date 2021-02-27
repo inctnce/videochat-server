@@ -51,7 +51,7 @@ class Server {
 		});
 	}
 
-	start(port: number) {
+	start(port: number): void {
 		this.listen(port);
 
 		this.io.on("connect", (socket: Socket) => {
@@ -71,32 +71,37 @@ class Server {
 	}
 
 	private onJoin(socket: Socket) {
-		socket.on("join", async ({ id, name, roomId }, callback: any) => {
+		socket.on("join", async ({ id, name, roomId }, callback: (error: Error) => void) => {
 			const { user, error } = userio.add(id, name, roomId, socket.id);
 
 			if (error) return callback(error);
 
-			await this.emitSetRoom(socket.id, roomId);
+			if (user) {
+				await this.emitSetRoom(socket.id, roomId);
 
-			socket.broadcast
-				.to(user!.roomId)
-				.emit("message", new Message(`пользователь ${name} присоединился к беседе`, "admin", "admin", roomId));
+				socket.broadcast
+					.to(user.roomId)
+					.emit("message", new Message(`пользователь ${name} присоединился к беседе`, "admin", "admin", roomId));
 
-			this.broadcastEmitNumOfUsers(socket, roomId);
+				this.broadcastEmitNumOfUsers(socket, roomId);
 
-			socket.join(user!.roomId);
+				socket.join(user.roomId);
+			}
 		});
 	}
 
 	private async emitSetRoom(socketId: string, roomId: string) {
-		const { room, error } = await Store.Room().readOne(roomId, "id");
-		room!.UpdateNumOfUsers(userio.getNumInRoom(roomId));
+		const { room } = await Store.Room().readOne(roomId, "id");
 
-		this.io.to(socketId).emit("setRoom", room);
+		if (room) {
+			room.UpdateNumOfUsers(userio.getNumInRoom(roomId));
+
+			this.io.to(socketId).emit("setRoom", room);
+		}
 	}
 
 	private onSendMessage(socket: Socket) {
-		socket.on("sendMessage", (m: MessageT, callback: any) => {
+		socket.on("sendMessage", (m: MessageT) => {
 			const message: Message = new Message(
 				m.text,
 				m.creatorId,

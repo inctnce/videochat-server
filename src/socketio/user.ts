@@ -34,11 +34,11 @@ function remove(socketId: string): User | undefined {
 	if (index !== -1) return users.splice(index, 1)[0];
 }
 
-function get(socketId: string) {
+function get(socketId: string): User | undefined {
 	return users.find((user) => user.socketId === socketId);
 }
 
-function getInRoom(roomId: string) {
+function getInRoom(roomId: string): User[] {
 	return users.filter((user) => user.roomId === roomId);
 }
 

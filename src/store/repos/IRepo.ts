@@ -1,8 +1,8 @@
 interface IRepo {
-	create(object: any): any;
-	readOne(key: any, field: string): any;
-	update(id: string, value: any, field: string): any;
-	delete(key: any): any;
+	create(object: unknown): unknown;
+	readOne(key: string, field: string): unknown;
+	update(id: string, value: string | null, field: string): unknown;
+	delete(key: string): unknown;
 }
 
 export default IRepo;
