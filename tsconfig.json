@@ -68,7 +68,7 @@
     "paths": {
       "@models/*": ["src/models/*"],
       "@store": ["src/store"],
-      "@app": ["src/server"],
+      "@server": ["src/server"],
       "@repos/*": ["src/store/repos/*"],
       "@db/*": ["src/store/db/*"],
       "@middlewares/*": ["src/middlewares/*"],

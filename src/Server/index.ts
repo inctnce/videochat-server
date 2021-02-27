@@ -1,10 +1,9 @@
-import Server from "./Server";
-
 import "../store/db/Database";
 
-import dotenv from "dotenv";
-
 import router from "../routes";
+
+import dotenv from "dotenv";
+import Server from "./Server";
 dotenv.config();
 
 const whitelist = ["http://localhost:3000", "https://inctnce-videochat-client.herokuapp.com"];

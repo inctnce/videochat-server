@@ -10,6 +10,7 @@ import Message from "@models/Message";
 import MessageT from "../types/Message";
 import Store from "@store";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const socketio = require("socket.io");
 
 class Server {
@@ -22,7 +23,7 @@ class Server {
 
 		app.use(express.json());
 		app.use(express.urlencoded({ extended: true }));
-		// app.use(cors(corsOptions));
+		app.use(cors());
 		app.use("/", router);
 
 		// Show routes called in console during development
