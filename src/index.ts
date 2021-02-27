@@ -1,4 +1,3 @@
-import "./preStart"; // Must be the first import
 import Server from "./Server";
 import router from "./routes";
 
