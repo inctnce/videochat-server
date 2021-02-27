@@ -24,7 +24,6 @@
   },
   "_moduleAliases": {
     "@models": "dist/models",
-    "@server": "dist/server",
     "@store": "dist/store",
     "@repos": "dist/store/repos",
     "@db": "dist/store/db",
