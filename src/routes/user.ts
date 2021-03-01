@@ -95,15 +95,13 @@ userRouter.get("/", verifyToken, async (req, res) => {
 	return res.status(400).send({ error: "token was not provided" });
 });
 
-userRouter.get("/:id/token", async (req, res) => {
-	const id: string = req.params.id;
-
+userRouter.get("/token", async (req, res) => {
 	if (req.headers.authorization) {
 		const refreshToken: string = req.headers.authorization.split(" ")[1];
+		const id = RefreshToken.decode(refreshToken);
 
 		const isValid: boolean = await RefreshToken.verify(id, refreshToken);
 		if (isValid) {
-			const id: string = req.params.id;
 			const accessToken: string = AccessToken.generate(id);
 			return res.status(200).send({ accessToken: accessToken });
 		}

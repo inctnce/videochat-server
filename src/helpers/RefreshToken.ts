@@ -6,6 +6,7 @@ class RefreshToken {
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return jwt.sign(JSON.stringify({ id: id }), process.env.REFRESH_TOKEN_SECRET!);
 	}
+
 	static async verify(id: string, token: string): Promise<boolean> {
 		const { user } = await Store.User().readOne(id, "id");
 
@@ -14,6 +15,10 @@ class RefreshToken {
 		}
 
 		return false;
+	}
+
+	static decode(token: string): any {
+		return jwt.decode(token);
 	}
 }
 
