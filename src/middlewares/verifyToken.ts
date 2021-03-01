@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import AccessToken from "@helpers/AccessToken";
 
-function verifyToken(req: Request, res: Response, next: NextFunction): void | Response<any> {
+function verifyToken(req: Request, res: Response, next: NextFunction): void | Response {
 	if (req.headers.authorization) {
 		const accessToken: string = req.headers.authorization.split(" ")[1];
 
