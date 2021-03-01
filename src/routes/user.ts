@@ -78,15 +78,21 @@ userRouter.get("/:id/logout", verifyToken, async (req, res) => {
 	return res.sendStatus(200);
 });
 
-userRouter.get("/:id", verifyToken, async (req, res) => {
-	const id = req.params.id;
-	const { user, error } = await Store.User().readOne(id, "id");
+userRouter.get("/", verifyToken, async (req, res) => {
+	if (req.headers.authorization) {
+		const token: string = req.headers.authorization.split(" ")[1];
+		const { id } = AccessToken.decode(token);
 
-	if (error) {
-		return res.sendStatus(503);
+		const { user, error } = await Store.User().readOne(id, "id");
+
+		if (error) {
+			return res.sendStatus(503);
+		}
+
+		return res.status(200).send(user);
 	}
 
-	return res.status(200).send(user);
+	return res.status(400).send({ error: "token was not provided" });
 });
 
 userRouter.get("/:id/token", async (req, res) => {

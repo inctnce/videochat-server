@@ -14,6 +14,10 @@ class AccessToken {
 			return false;
 		}
 	}
+
+	static decode(token: string): any {
+		return jwt.decode(token);
+	}
 }
 
 export default AccessToken;
